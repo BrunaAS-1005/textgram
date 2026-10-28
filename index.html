@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Textgram da Sala</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    body { background: #090d16; color: #f8fafc; padding: 16px; min-height: 100vh; }
+    .container { max-width: 520px; margin: 0 auto; }
+    
+    header { text-align: center; margin-bottom: 20px; }
+    .logo { font-size: 28px; font-weight: 800; background: linear-gradient(to right, #c084fc, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+
+    .card { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4); }
+    
+    label { font-size: 12px; color: #94a3b8; font-weight: 600; display: block; margin-bottom: 6px; }
+    input, textarea { width: 100%; background: #030712; border: 1px solid #1e293b; color: #f8fafc; padding: 12px; border-radius: 12px; font-size: 14px; outline: none; margin-bottom: 12px; }
+    input:focus, textarea:focus { border-color: #a855f7; }
+
+    .btn { width: 100%; background: linear-gradient(to right, #9333ea, #db2777); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+    .btn:hover { opacity: 0.9; }
+    .btn-sec { background: #1e293b; border: 1px solid #334155; margin-top: 8px; }
+    .btn-del { background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; float: right; }
+
+    .profile-box { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .avatar { font-size: 34px; background: #030712; border-radius: 50%; padding: 8px; border: 1px solid #334155; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
+    
+    .post { background: rgba(15, 23, 42, 0.9); border: 1px solid #1e293b; border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+    .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .post-author { font-weight: 700; color: #c084fc; font-size: 14px; }
+    .post-content { font-size: 14px; line-height: 1.6; white-space: pre-wrap; margin-bottom: 10px; }
+    
+    .admin-badge { background: #eab308; color: #000; font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 800; margin-left: 6px; }
+
+    .comments-box { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; margin-top: 10px; }
+    .comment { background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 6px; }
+    .comment-form { display: flex; gap: 8px; margin-top: 8px; }
+    .comment-form input { margin-bottom: 0; padding: 8px 12px; font-size: 12px; }
+    
+    .status-msg { font-size: 11px; color: #a855f7; text-align: center; margin-bottom: 12px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">✍️ Textgram da Sala</div>
+      <div class="subtitle">Mural em Nuvem da Turma</div>
+    </header>
+
+    <!-- TELA DE LOGIN / CADASTRO -->
+    <div id="loginCard" class="card">
+      <h3 style="margin-bottom: 14px; font-size: 16px;">Entrar na Sua Conta</h3>
+      <label>Seu E-mail:</label>
+      <input type="email" id="inputEmail" placeholder="seu-email@escola.com" autocomplete="off" />
+      <label>Sua Senha:</label>
+      <input type="password" id="inputPass" placeholder="Sua senha" autocomplete="off" />
+      <button type="button" class="btn" id="btnLogin">Entrar</button>
+      <button type="button" class="btn btn-sec" id="btnRegister">Criar Conta Nova</button>
+    </div>
+
+    <!-- TELA PRINCIPAL DO APP -->
+    <div id="appCard" class="card" style="display: none;">
+      <div class="profile-box">
+        <div class="avatar" id="userAvatar">👤</div>
+        <div>
+          <div style="font-size: 15px; font-weight: 800;" id="userName">Nome do Usuário</div>
+          <div style="font-size: 12px; color: #94a3b8;" id="userBio">Sua biografia aqui...</div>
+        </div>
+      </div>
+
+      <!-- EDITAR PERFIL -->
+      <details style="margin-bottom: 14px; font-size: 12px; color: #c084fc; cursor: pointer; font-weight: 600;">
+        <summary>✏️ Editar Meu Perfil (Nome, Bio e Foto/Emoji)</summary>
+        <div style="margin-top: 12px;">
+          <label>Seu Nome Exibido:</label>
+          <input type="text" id="editName" placeholder="Como deseja ser chamado(a)?" />
+          <label>Seu Emoji de Foto:</label>
+          <input type="text" id="editAvatar" placeholder="Cole um emoji aqui (ex: 😎, 🐱, ✨)" />
+          <label>Sua Biografia:</label>
+          <input type="text" id="editBio" placeholder="Uma frase sobre você..." />
+          <button type="button" class="btn btn-sec" id="btnSaveProfile">Salvar Perfil na Nuvem</button>
+        </div>
+      </details>
+
+      <label>Escreva seu texto para a turma:</label>
+      <textarea id="postContent" rows="3" placeholder="O que você está pensando hoje?"></textarea>
+      <button type="button" class="btn" id="btnPublish">Publicar no Mural</button>
+      <button type="button" class="btn btn-sec" id="btnLogout" style="margin-top: 10px;">Sair da Conta</button>
+    </div>
+
+    <div id="statusMsg" class="status-msg">🔄 Conectando à nuvem da sala...</div>
+
+    <!-- MURAL COMPARTILHADO -->
+    <div id="postsFeed"></div>
+  </div>
+
+  <script>
+    // ⚠️ ALTERE APENAS ESTA LINHA COM O SEU E-MAIL PARA SER ADMIN SUPREMA:
+    const ADMIN_EMAIL = "seu-email@escola.com";
+
+    const CLOUD_URL = "https://api.jsonbin.io/v3/b/66fbc412e41b4d34e439d5b8";
+
+    let db = { users: {}, posts: [] };
+    let currentUser = null;
+
+    async function loadCloudData() {
+      const status = document.getElementById("statusMsg");
+      try {
+        const res = await fetch(CLOUD_URL + "/latest", { cache: "no-store" });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.record) {
+            db.users = json.record.users || {};
+            db.posts = json.record.posts || [];
+          }
+        }
+        status.innerText = "✨ Mural sincronizado em tempo real!";
+      } catch (e) {
+        status.innerText = "⚠️ Erro ao sincronizar com a nuvem.";
+      }
+      renderPosts();
+    }
+
+    async function saveCloudData() {
+      const status = document.getElementById("statusMsg");
+      status.innerText = "⏳ Salvando dados na nuvem...";
+      try {
+        await fetch(CLOUD_URL, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(db)
+        });
+        status.innerText = "✅ Salvo para toda a sala!";
+      } catch (e) {
+        status.innerText = "❌ Erro de conexão ao salvar.";
+      }
+      renderPosts();
+    }
+
+    window.addEventListener("DOMContentLoaded", function() {
+
+      document.getElementById("btnLogin").addEventListener("click", function() {
+        const email = document.getElementById("inputEmail").value.trim().toLowerCase();
+        const pass = document.getElementById("inputPass").value.trim();
+
+        if (!email || !pass) return alert("Preencha o e-mail e a senha.");
+
+        if (db.users[email]) {
+          if (db.users[email].pass === pass) {
+            currentUser = db.users[email];
+            updateView();
+          } else {
+            alert("Senha incorreta!");
+          }
+        } else {
+          alert("Conta não encontrada. Clique em 'Criar Conta Nova'.");
+        }
+      });
+
+      document.getElementById("btnRegister").addEventListener("click", function() {
+        const email = document.getElementById("inputEmail").value.trim().toLowerCase();
+        const pass = document.getElementById("inputPass").value.trim();
+
+        if (!email || !pass) return alert("Preencha o e-mail e a senha.");
+
+        if (db.users[email]) {
+          alert("Este e-mail já está cadastrado!");
+        } else {
+          db.users[email] = {
+            email: email,
+            pass: pass,
+            name: email.split('@')[0],
+            avatar: "👤",
+            bio: "Estudante no Textgram",
+            isAdmin: email === ADMIN_EMAIL.toLowerCase()
+          };
+          currentUser = db.users[email];
+          saveCloudData();
+          updateView();
+          alert("Conta criada com sucesso na nuvem!");
+        }
+      });
+
+      document.getElementById("btnLogout").addEventListener("click", function() {
+        currentUser = null;
+        updateView();
+      });
+
+      document.getElementById("btnSaveProfile").addEventListener("click", function() {
+        if (!currentUser) return;
+        const newName = document.getElementById("editName").value.trim();
+        const newAvatar = document.getElementById("editAvatar").value.trim();
+        const newBio = document.getElementById("editBio").value.trim();
+
+        if (newName) currentUser.name = newName;
+        if (newAvatar) currentUser.avatar = newAvatar;
+        if (newBio) currentUser.bio = newBio;
+
+        db.users[currentUser.email] = currentUser;
+        saveCloudData();
+        updateView();
+        alert("Perfil atualizado na nuvem!");
+      });
+
+      document.getElementById("btnPublish").addEventListener("click", function() {
+        const text = document.getElementById("postContent").value.trim();
+        if (!text || !currentUser) return alert("Escreva um texto antes de publicar.");
+
+        const newPost = {
+          id: "p_" + Date.now(),
+          authorEmail: currentUser.email,
+          authorName: currentUser.name,
+          authorAvatar: currentUser.avatar,
+          content: text,
+          comments: []
+        };
+
+        db.posts.unshift(newPost);
+        document.getElementById("postContent").value = "";
+        saveCloudData();
+      });
+
+      loadCloudData();
+    });
+
+    function updateView() {
+      if (currentUser) {
+        document.getElementById("loginCard").style.display = "none";
+        document.getElementById("appCard").style.display = "block";
+        const isAdmin = currentUser.email === ADMIN_EMAIL.toLowerCase();
+        document.getElementById("userName").innerHTML = escapeHtml(currentUser.name) + (isAdmin ? ' <span class="admin-badge">ADMIN SUPREMA</span>' : '');
+        document.getElementById("userAvatar").innerText = currentUser.avatar || "👤";
+        document.getElementById("userBio").innerText = currentUser.bio || "";
+      } else {
+        document.getElementById("loginCard").style.display = "block";
+        document.getElementById("appCard").style.display = "none";
+      }
+      renderPosts();
+    }
+
+    function renderPosts() {
+      const feed = document.getElementById("postsFeed");
+      feed.innerHTML = "";
+
+      if (!db.posts || db.posts.length === 0) {
+        feed.innerHTML = '<div class="card" style="text-align:center; font-size:13px; color:#94a3b8;">Nenhum texto publicado ainda.</div>';
+        return;
+      }
+
+      const isAdmin = currentUser && currentUser.email === ADMIN_EMAIL.toLowerCase();
+
+      db.posts.forEach(post => {
+        const canDelete = isAdmin || (currentUser && currentUser.email === post.authorEmail);
+        const comments = post.comments || [];
+
+        const div = document.createElement("div");
+        div.className = "post";
+        div.innerHTML = `
+          <div class="post-header">
+            <span class="post-author">${post.authorAvatar || '👤'} @${escapeHtml(post.authorName)}</span>
+            ${canDelete ? `<button type="button" class="btn-del" onclick="deletePost('${post.id}')">🗑️ Apagar</button>` : ''}
+          </div>
+          <div class="post-content">${escapeHtml(post.content)}</div>
+          
+          <div class="comments-box">
+            <div style="font-size:11px; color:#94a3b8; font-weight:700; margin-bottom:6px;">💬 Comentários (${comments.length})</div>
+            ${comments.map((c, idx) => `
+              <div class="comment">
+                <strong style="color:#c084fc;">@${escapeHtml(c.authorName)}:</strong> ${escapeHtml(c.text)}
+                ${isAdmin ? `<span style="color:#ef4444; cursor:pointer; float:right; font-weight:bold;" onclick="deleteComment('${post.id}', ${idx})">✕</span>` : ''}
+              </div>
+            `).join('')}
+            
+            ${currentUser ? `
+              <div class="comment-form">
+                <input type="text" id="c_input_${post.id}" placeholder="Responder..." />
+                <button type="button" class="btn" style="width:auto; padding:8px 14px; font-size:12px;" onclick="addComment('${post.id}')">Enviar</button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+        feed.appendChild(div);
+      });
+    }
+
+    function addComment(postId) {
+      const input = document.getElementById(`c_input_${postId}`);
+      if (!input || !input.value.trim() || !currentUser) return;
+
+      const post = db.posts.find(p => p.id === postId);
+      if (post) {
+        post.comments = post.comments || [];
+        post.comments.push({
+          authorName: currentUser.name,
+          text: input.value.trim()
+        });
+        saveCloudData();
+      }
+    }
+
+    function deleteComment(postId, index) {
+      if (!confirm("Apagar este comentário?")) return;
+      const post = db.posts.find(p => p.id === postId);
+      if (post && post.comments) {
+        post.comments.splice(index, 1);
+        saveCloudData();
+      }
+    }
+
+    function deletePost(id) {
+      if (confirm("Apagar esta publicação do mural da sala?")) {
+        db.posts = db.posts.filter(p => p.id !== id);
+        saveCloudData();
+      }
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.innerText = str || '';
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
